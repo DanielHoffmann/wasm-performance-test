@@ -12,7 +12,7 @@
     "storybook": "web-tooling storybook:react",
     "test": "web-tooling test",
     "type-check": "web-tooling type-check",
-    "clang": "rm -f ./public/main.wasm && clang --target=wasm32-wasi  --sysroot /Users/hoff/dev/wasm-test/wasi-libc/sysroot -Wl,--allow-undefined-file=src/wasm.syms -Wl,--export-all -O2 -s -o ./public/main.wasm ./src/main.cpp"
+    "clang": "rm -f ./public/main.wasm && clang --target=wasm32-wasi  --sysroot wasi-libc/sysroot -Wl,--allow-undefined-file=src/wasm.syms -Wl,--export-all -O2 -s -o ./public/main.wasm ./src/main.cpp"
   },
   "husky": {
     "hooks": {

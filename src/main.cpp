@@ -17,7 +17,7 @@ WASM_IMPORT void __console_log(jspointer str);
 
 WASM_EXPORT char *get_memory_for_string(int size)
 {
-    return (char *)(sizeof(char) * size);
+    return (char *)malloc(sizeof(char) * size);
 }
 
 WASM_EXPORT void free_memory_for_string(char *str)
