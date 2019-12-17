@@ -1,0 +1,5 @@
+/node_modules
+/clang
+/wasi-libc
+/build
+.DS_Store

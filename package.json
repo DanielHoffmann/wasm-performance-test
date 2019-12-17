@@ -1,0 +1,32 @@
+{
+  "name": "wasm-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "web-tooling webpack-dev-server",
+    "build": "web-tooling webpack",
+    "analyze": "web-tooling analyze",
+    "format": "web-tooling format",
+    "lint": "web-tooling lint",
+    "storybook": "web-tooling storybook:react",
+    "test": "web-tooling test",
+    "type-check": "web-tooling type-check",
+    "clang": "rm -f ./public/main.wasm && clang --target=wasm32-wasi  --sysroot /Users/hoff/dev/wasm-test/wasi-libc/sysroot -Wl,--allow-undefined-file=src/wasm.syms -Wl,--export-all -O2 -s -o ./public/main.wasm ./src/main.cpp"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "web-tooling pre-commit",
+      "pre-push": "web-tooling pre-push"
+    }
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@sandvikcode/web-tooling": "^0.15.1",
+    "husky": "^3.1.0"
+  },
+  "dependencies": {
+    "@wasmer/wasi": "^0.5.1",
+    "@wasmer/wasmfs": "^0.5.1"
+  }
+}
