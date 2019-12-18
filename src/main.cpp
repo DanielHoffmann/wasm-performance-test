@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+using namespace std;
 
 #define WASM_EXPORT extern "C"
 #define WASM_IMPORT extern "C"
@@ -10,6 +11,12 @@
 
 int main()
 {
+    int *p = NULL;
+    p = new int;
+    *p = 11;
+    printf("c++ allocated value: %d\n", *p);
+    delete p;
+
     printf("This is C's stdout!\n");
     return 0;
 }
