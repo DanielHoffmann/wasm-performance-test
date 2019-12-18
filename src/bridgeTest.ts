@@ -1,16 +1,18 @@
+import * as cstring from './cstring';
+
 export default async function bridgeTest(wasm: any, wasmFs: any) {
-  const { instance } = wasm;
+  const {
+    instance: { exports: exp },
+  } = wasm;
   console.log(await wasmFs.getStdOut());
 
-  instance.exports.test();
+  console.log('This is computed in C and returned to JS: ' + exp.intTimes2(10));
 
   console.log(
-    'This is computed in C and returned to JS: ' +
-      instance.exports.intTimes2(10),
+    'This is computed in C and returned to JS: ' + exp.uLongTimes2(10),
   );
 
-  console.log(
-    'This is computed in C and returned to JS: ' +
-      instance.exports.uLongTimes2(10),
-  );
+  const pointer = cstring.stringToCharPtr(wasm, 'JS-string');
+  exp.bridgeTest(pointer);
+  cstring.freeCharPtr(wasm, pointer);
 }

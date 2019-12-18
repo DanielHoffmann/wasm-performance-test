@@ -25,9 +25,12 @@ WASM_EXPORT void free_memory_for_string(char *str)
     free(str);
 }
 
-WASM_EXPORT void test()
+WASM_EXPORT void bridgeTest(char *jsString)
 {
-    __console_log((jspointer) "This is C calling JS!");
+    char *finalStr = (char *)malloc(sizeof(char) * 1000);
+    finalStr = "C-string ";
+    __console_log((jspointer)strcat(finalStr, jsString));
+    free(finalStr);
 }
 
 WASM_EXPORT int intTimes2(int val)
