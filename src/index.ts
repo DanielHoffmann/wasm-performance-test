@@ -1,5 +1,7 @@
 import { WASI } from '@wasmer/wasi';
 import { WasmFs } from '@wasmer/wasmfs';
+import performanceTest from './performanceTest';
+import bridgeTest from './bridgeTest';
 
 type CharPointer = number;
 
@@ -22,7 +24,9 @@ let wasm: {
       get_memory_for_string: (size: number) => CharPointer;
       free_memory_for_string: (ptr: CharPointer) => void;
       test: () => void;
-      times2: (val: number) => number;
+      intTimes2: (val: number) => number;
+      uLongTimes2: (val: number) => number;
+      fibBenchmark: (fibNumber: number, times: number) => void;
     };
   };
 } & WebAssembly.WebAssemblyInstantiatedSource;
@@ -68,16 +72,10 @@ const startWasiTask = async () => {
     wasi_snapshot_preview1: wasi.wasiImport,
     env: bridge,
   });
-  const { instance } = wasm;
-  wasi.start(instance);
+  wasi.start(wasm.instance);
 
-  console.log(await wasmFs.getStdOut());
-
-  instance.exports.test();
-
-  console.log(
-    'This is computed in C and returned to JS: ' + instance.exports.times2(10),
-  );
+  await bridgeTest(wasm, wasmFs);
+  await performanceTest(wasm);
 };
 
 startWasiTask();
