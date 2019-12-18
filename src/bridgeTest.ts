@@ -12,7 +12,7 @@ export default async function bridgeTest(wasm: any, wasmFs: any) {
     'This is computed in C and returned to JS: ' + exp.uLongTimes2(10),
   );
 
-  const pointer = cstring.stringToCharPtr(wasm, 'JS-string');
+  const pointer = cstring.stringToCharPtr(wasm, 'JS unicode test áéíäåöç');
   exp.bridgeTest(pointer);
   cstring.freeCharPtr(wasm, pointer);
 }

@@ -1,6 +1,7 @@
 import { WASI } from '@wasmer/wasi';
 import { WasmFs } from '@wasmer/wasmfs';
-import performanceTest from './performanceTest';
+import fibTest from './fibTest';
+import addingTest from './addingTest';
 import bridgeTest from './bridgeTest';
 import { CharPointer, charPtrToString } from './cstring';
 
@@ -48,7 +49,8 @@ const startWasiTask = async () => {
   wasi.start(wasm.instance);
 
   await bridgeTest(wasm, wasmFs);
-  // await performanceTest(wasm);
+  await addingTest(wasm);
+  await fibTest(wasm);
 };
 
 startWasiTask();
