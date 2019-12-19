@@ -1,5 +1,5 @@
-/node_modules
-/clang
-/wasi-libc
-/build
 .DS_Store
+/node_modules
+/build
+/clang
+/wasi-sysroot

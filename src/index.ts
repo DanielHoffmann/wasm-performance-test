@@ -43,7 +43,7 @@ const startWasiTask = async () => {
   const wasm_bytes = new Uint8Array(responseArrayBuffer).buffer;
   // @ts-ignore
   wasm = await WebAssembly.instantiate(wasm_bytes, {
-    wasi_snapshot_preview1: wasi.wasiImport,
+    wasi_unstable: wasi.wasiImport,
     env: bridge,
   });
   wasi.start(wasm.instance);

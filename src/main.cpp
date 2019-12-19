@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <iostream>
 using namespace std;
 
 #define WASM_EXPORT extern "C"
@@ -11,13 +12,14 @@ using namespace std;
 
 int main()
 {
+    printf("C stdout test\n");
+    cout << "C++ stdout test" << endl;
     int *p = NULL;
     p = new int;
     *p = 11;
-    printf("c++ allocated value: %d\n", *p);
+    printf("C++ allocated value: %d\n", *p);
     delete p;
 
-    printf("This is C's stdout!\n");
     return 0;
 }
 
@@ -75,7 +77,7 @@ unsigned long fib(unsigned long n)
     {
         return n;
     }
-    return fib(n - 1) + fib(n - 2);
+    return fib(n - 1) + fib(n - 2) + 1;
 }
 
 unsigned long fib(float n)
@@ -84,7 +86,7 @@ unsigned long fib(float n)
     {
         return n;
     }
-    return fib(n - 1) + fib(n - 2);
+    return fib(n - 1) + fib(n - 2) + 1;
 }
 
 unsigned long fib(double n)
@@ -93,7 +95,7 @@ unsigned long fib(double n)
     {
         return n;
     }
-    return fib(n - 1) + fib(n - 2);
+    return fib(n - 1) + fib(n - 2) + 1;
 }
 
 WASM_EXPORT int fibBenchmarkULong(unsigned long times, unsigned long fibnumber)
