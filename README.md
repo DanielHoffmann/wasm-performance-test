@@ -2,8 +2,6 @@ extract prebuilt clang binaries into /clang:
 
 http://releases.llvm.org/download.html
 
-add /clang/bin to PATH
-
 extract libclang_rt.builtins-wasm32-wasi-VERSION.tar.gz from:
 
 https://github.com/CraneStation/wasi-sdk/releases

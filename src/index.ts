@@ -3,7 +3,8 @@ import { WasmFs } from '@wasmer/wasmfs';
 import fibTest from './fibTest';
 import addingTest from './addingTest';
 import bridgeTest from './bridgeTest';
-import { CharPointer, charPtrToString } from './cstring';
+import { render2dWasm, render2dJS } from './canvas2dTest';
+import { CharPointer, charPtrToString } from './chelpers';
 
 const wasmFs = new WasmFs();
 let wasi = new WASI({
@@ -15,21 +16,7 @@ let wasi = new WASI({
   },
 });
 
-let wasm: {
-  instance: {
-    exports: {
-      memory: {
-        buffer: number;
-      };
-      get_memory_for_string: (size: number) => CharPointer;
-      free_memory_for_string: (ptr: CharPointer) => void;
-      bridgeTest: (ptr: CharPointer) => void;
-      intTimes2: (val: number) => number;
-      uLongTimes2: (val: number) => number;
-      fibBenchmark: (fibNumber: number, times: number) => void;
-    };
-  };
-} & WebAssembly.WebAssemblyInstantiatedSource;
+let wasm: WebAssembly.WebAssemblyInstantiatedSource;
 
 const bridge = {
   __console_log(str: CharPointer) {
@@ -49,8 +36,10 @@ const startWasiTask = async () => {
   wasi.start(wasm.instance);
 
   await bridgeTest(wasm, wasmFs);
-  await addingTest(wasm);
-  await fibTest(wasm);
+  // await addingTest(wasm);
+  // await fibTest(wasm);
+  // await render2dWasm(wasm);
+  // await render2dJS();
 };
 
 startWasiTask();
