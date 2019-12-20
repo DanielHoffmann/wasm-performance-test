@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { WASI } from '@wasmer/wasi';
 import { WasmFs } from '@wasmer/wasmfs';
+// tslint:disable-next-line
 import addingTest from './addingTest';
+// tslint:disable-next-line
 import bridgeTest from './bridgeTest';
+// tslint:disable-next-line
 import { render2dJS, render2dWasm } from './canvas2dTest';
+// tslint:disable-next-line
 import { CharPointer, charPtrToString } from './chelpers';
+// tslint:disable-next-line
 import fibTest from './fibTest';
 import './index.css';
 // @ts-ignore
 import Worker from './test.worker';
 
+// tslint:disable-next-line
 function workerTest(workers = 10) {
   // worker has an infinite loop consuming 100% of the cpu
   for (let i = 0; i < workers; i++) {
