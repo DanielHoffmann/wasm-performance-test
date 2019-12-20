@@ -1,5 +1,5 @@
 canvas {
-  border: solid 1px rgb(0, 0, 0);
+  border: var(--border);
   display: flex;
   height: 600px;
   margin: 15px;
