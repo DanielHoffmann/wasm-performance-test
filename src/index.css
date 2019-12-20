@@ -1,0 +1,18 @@
+canvas {
+  border: solid 1px rgb(0, 0, 0);
+  display: flex;
+  height: 600px;
+  margin: 15px;
+  width: 600px;
+}
+
+.start-hidden {
+  display: none;
+  flex-direction: column;
+  margin: 5px;
+}
+
+span {
+  display: contents;
+  font-size: 20px;
+}

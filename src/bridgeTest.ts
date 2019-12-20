@@ -1,4 +1,4 @@
-import { stringToCharPtr, freeCharPtr } from './chelpers';
+import { freeCharPtr, stringToCharPtr } from './chelpers';
 
 export default async function bridgeTest(wasm: any, wasmFs: any) {
   const {
@@ -8,7 +8,7 @@ export default async function bridgeTest(wasm: any, wasmFs: any) {
   console.log('---------BRIDGE TESTS START -----------');
   console.log(await wasmFs.getStdOut());
 
-  console.log('This is computed in C and returned to JS: ' + exp.times2(10));
+  console.log(`This is computed in C and returned to JS: ${exp.times2(10)}`);
 
   const pointer = stringToCharPtr(wasm, 'JS unicode test áéíäåöç');
   exp.bridgeTest(pointer);

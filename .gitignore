@@ -3,3 +3,4 @@
 /build
 /clang
 /wasi-sysroot
+yarn-error.log

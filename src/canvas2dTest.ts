@@ -38,14 +38,11 @@ export async function render2dWasm(wasm: any) {
     width * height * 4,
   );
   const img = new ImageData(data, width, height);
-  let lastCalledTime: number;
+  let lastCalledTime: number = performance.now();
   let count = 0;
   const render = (timestamp: number) => {
     const now = performance.now();
-    if (!lastCalledTime) {
-      lastCalledTime = performance.now();
-    }
-    let delta = (now - lastCalledTime) / 1000;
+    const delta = (now - lastCalledTime) / 1000;
     lastCalledTime = now;
     if (count === 10) {
       count = 0;
@@ -84,14 +81,11 @@ export function render2dJS() {
   window.requestAnimationFrame(render2dJSActual);
 }
 
-let lastCalledTime: number;
+let lastCalledTime: number = performance.now();
 let count = 0;
 function render2dJSActual(timestamp: number) {
   const now = performance.now();
-  if (!lastCalledTime) {
-    lastCalledTime = performance.now();
-  }
-  let delta = (now - lastCalledTime) / 1000;
+  const delta = (now - lastCalledTime) / 1000;
   lastCalledTime = now;
   if (count === 10) {
     count = 0;

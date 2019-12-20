@@ -16,13 +16,10 @@ function wait(time: number) {
   });
 }
 
-const TIMES = 2000000;
-
-async function fibJsBenchmark(runs: number) {
+async function fibJsBenchmark(runs: number, times: number) {
   for (let i = 0; i < runs; i++) {
-    let value;
     const t0 = performance.now();
-    value = adding(TIMES);
+    const value = adding(times);
     const t1 = performance.now();
     console.log(`JS run ${i}, value: ${value}, time: ${t1 - t0} ms`);
     await wait(1000);
@@ -33,6 +30,7 @@ async function fibCBenchmark(
   wasm: any,
   type: 'ulong' | 'float' | 'double',
   runs: number,
+  times: number,
 ) {
   let fn = wasm.instance.exports.addingLong;
   if (type === 'float') {
@@ -42,19 +40,23 @@ async function fibCBenchmark(
   }
   for (let i = 0; i < runs; i++) {
     const t0 = performance.now();
-    const value = fn(TIMES);
+    const value = fn(times);
     const t1 = performance.now();
     console.log(`C ${type} run ${i}, value: ${value}, time: ${t1 - t0} ms`);
     await wait(1000);
   }
 }
 
-export default async function performanceTest(wasm: any) {
+export default async function performanceTest(
+  wasm: any,
+  runs = 4,
+  times = 8000000,
+) {
   await wait(2000);
   console.log('---------ADDING TESTS START -----------');
-  await fibCBenchmark(wasm, 'ulong', 4);
-  await fibCBenchmark(wasm, 'float', 4);
-  await fibCBenchmark(wasm, 'double', 4);
-  await fibJsBenchmark(4);
+  await fibCBenchmark(wasm, 'ulong', runs, times);
+  await fibCBenchmark(wasm, 'float', runs, times);
+  await fibCBenchmark(wasm, 'double', runs, times);
+  await fibJsBenchmark(runs, times);
   console.log('---------ADDING TESTS END -------------');
 }

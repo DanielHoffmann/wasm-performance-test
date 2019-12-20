@@ -96,16 +96,16 @@ public:
 WASM_EXPORT void bridgeTestCppFeatures()
 {
     MyClass<int> obj(10);
-    __console_log("C++ MyClass<int> obj(): ");
+    __console_log("C++ MyClass<int> obj(10): ");
     __console_log(obj.getProperty());
 
     MyClass<int> *classPtr = new MyClass<int>(11);
-    __console_log("C++ new MyClass<int>: ");
+    __console_log("C++ new MyClass<int>(11): ");
     __console_log(classPtr->getProperty());
     delete classPtr;
 
     unique_ptr<MyClass<double>> classUniquePtr(new MyClass<double>(12.2));
-    __console_log("C++ unique_ptr<MyClass<double>>: ");
+    __console_log("C++ unique_ptr<MyClass<double>>(12.2): ");
     __console_log(classUniquePtr->getProperty());
 }
 
