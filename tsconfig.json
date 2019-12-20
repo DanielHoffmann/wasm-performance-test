@@ -1,4 +1,6 @@
 {
   "extends": "@sandvikcode/web-tooling/config/tsconfig",
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "noUnusedLocals": false,
+  "noUnusedParameters": false
 }
