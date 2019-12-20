@@ -10,6 +10,15 @@ import './index.css';
 // @ts-ignore
 import Worker from './test.worker';
 
+// preventing unused variable TS errors
+let a: any = addingTest;
+a = bridgeTest;
+a = render2dJS;
+a = render2dWasm;
+a = fibTest;
+a = '';
+console.log(a);
+
 // tslint:disable-next-line
 function workerTest(workers = 10) {
   // worker has an infinite loop consuming 100% of the cpu
