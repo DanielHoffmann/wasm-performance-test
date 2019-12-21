@@ -16,7 +16,7 @@ let buf8: Uint8ClampedArray;
 
 const workers: { frameStatus: boolean; worker: any }[] = [];
 
-export function render2dJS(threads = 8, cssanimate = false) {
+export function render2dJS(threads = 1, cssanimate = false) {
   (document.getElementById(
     '2dcanvas-js-container',
   ) as HTMLElement).style.display = 'flex';

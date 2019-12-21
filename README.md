@@ -24,13 +24,13 @@ Simple function that adds and substracts to a variable inside a long-running loo
 
 Testing JS/Wasm communication
 
-## render2dTestJS()
+## render2dTestJS(threads)
 
-Complex animation written in JS that renders to a 600x600 canvas
+Complex animation written in JS that renders to a 600x600 canvas. This is implemented using webworkers and can be parallelized to improve performance (first parameter is number of threads, defaults to 1)
 
 ## render2dTestWasm()
 
-Same as render2dTestJS, but written in C but rendering to a browser canvas by passing a C buffer to it
+Same as render2dTestJS, but written in C but rendering to a browser canvas by passing a C buffer to it. This version is not multithreaded because wasm doesn't support threads yet
 
 ## workerTest()
 
