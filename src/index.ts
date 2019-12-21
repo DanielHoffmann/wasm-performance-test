@@ -3,9 +3,9 @@ import { WASI } from '@wasmer/wasi';
 import { WasmFs } from '@wasmer/wasmfs';
 import addingTest from './addingTest';
 import bridgeTest from './bridgeTest';
-import { render2dJS, render2dWasm } from './canvas2dTest';
 import { CharPointer, charPtrToString } from './chelpers';
 import fibTest from './fibTest';
+import { render2dJS, render2dWasm } from './render2dTest';
 import './index.css';
 // @ts-ignore
 import Worker from './test.worker';
@@ -63,7 +63,7 @@ const startWasiTask = async () => {
   );
   wasi.start(wasm.instance);
 
-  await bridgeTest(wasm, wasmFs);
+  // await bridgeTest(wasm, wasmFs);
   // await addingTest(wasm);
   // await fibTest(wasm);
   // await render2dJS();

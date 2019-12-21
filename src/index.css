@@ -2,8 +2,27 @@ canvas {
   border: var(--border);
   display: flex;
   height: 600px;
-  margin: 15px;
+  margin: 10px;
   width: 600px;
+}
+
+.animate {
+  animation: translate 4s ease-in-out infinite;
+}
+
+@keyframes anim {
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes translate {
+  50% {
+    transform: translateX(500px) rotateY(180deg);
+  }
+  100% {
+    transform: translateX(0) rotateY(0);
+  }
 }
 
 .start-hidden {
