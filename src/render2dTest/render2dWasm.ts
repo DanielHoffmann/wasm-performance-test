@@ -40,7 +40,7 @@ export async function render2dWasmPerformanceTest(
     }
     const t1 = performance.now();
     console.log(
-      `C render2dWasm ${resolution}x${resolution}, ${frames} frames, run ${i}, time: ${(
+      `Wasm render2d ${resolution}x${resolution}, ${frames} frames, run ${i}, time: ${(
         t1 - t0
       ).toFixed(0)} ms, fps: ${((1000 * frames) / (t1 - t0)).toFixed(2)}`,
     );

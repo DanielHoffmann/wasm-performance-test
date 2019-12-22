@@ -209,7 +209,16 @@ WASM_EXPORT void render2d(double timestamp)
 
 /* BENCHMARKING FUNCTIONS */
 
-unsigned long fib(unsigned long n)
+unsigned long fib(uint32_t n)
+{
+    if (n < 2)
+    {
+        return n;
+    }
+    return fib(n - 1) + fib(n - 2) + 1;
+}
+
+unsigned long fib(uint64_t n)
 {
     if (n < 2)
     {
@@ -236,37 +245,48 @@ unsigned long fib(double n)
     return fib(n - 1) + fib(n - 2) + 1;
 }
 
-WASM_EXPORT unsigned long fibBenchmarkULong(unsigned long times, int fibnumber)
+WASM_EXPORT unsigned long fibBenchmarkUInt32(unsigned long times, int fibnumber)
 {
-    unsigned long acc = 0;
-    unsigned long fibn = (unsigned long) fibnumber;
+    uint32_t value = 0;
+    uint32_t fibn = (uint32_t) fibnumber;
     for (unsigned long i = 0; i < times; i++)
     {
-        acc += fib(fibn);
+        value = fib(fibn);
     }
-    return acc;
+    return value;
+}
+
+WASM_EXPORT unsigned long fibBenchmarkUInt64(unsigned long times, int fibnumber)
+{
+    uint64_t value = 0;
+    uint64_t fibn = (uint64_t) fibnumber;
+    for (unsigned long i = 0; i < times; i++)
+    {
+        value = fib(fibn);
+    }
+    return value;
 }
 
 WASM_EXPORT unsigned long fibBenchmarkFloat(unsigned long times, int fibnumber)
 {
-    float acc = 0;
+    float value = 0;
     float fibn = (float) fibnumber;
     for (unsigned long i = 0; i < times; i++)
     {
-        acc += fib(fibn);
+        value = fib(fibn);
     }
-    return acc;
+    return value;
 }
 
 WASM_EXPORT unsigned long fibBenchmarkDouble(unsigned long times, int fibnumber)
 {
-    double acc = 0;
+    double value = 0;
     double fibn = (double) fibnumber;
     for (unsigned long i = 0; i < times; i++)
     {
-        acc += fib(fibn);
+        value = fib(fibn);
     }
-    return acc;
+    return value;
 }
 
 WASM_EXPORT long addingUInt8(unsigned long times)
@@ -415,47 +435,55 @@ WASM_EXPORT long addingDouble(unsigned long times)
 #ifdef __x86_64
 void addingPerformanceTest(char const type[], int runs = 4, unsigned long times = 800000000) {
     long (*fptr)(unsigned long);
-    if (strcmp(type, "uint")) {
+    if (strcmp(type, "uint") == 0) {
         fptr = &addingUInt;
-    } else if (strcmp(type, "ulong")) {
+    } else if (strcmp(type, "ulong") == 0) {
         fptr = &addingULong;
-    } else if (strcmp(type, "uint8")) {
+    } else if (strcmp(type, "uint8") == 0) {
+        fptr = &addingUInt8;
+    } else if (strcmp(type, "uint16") == 0) {
+        fptr = &addingUInt16;
+    } else if (strcmp(type, "uint32") == 0) {
         fptr = &addingUInt32;
-    } else if (strcmp(type, "uint16")) {
-        fptr = &addingUInt32;
-    } else if (strcmp(type, "uint32")) {
-        fptr = &addingUInt32;
-    } else if (strcmp(type, "uint64")) {
+    } else if (strcmp(type, "uint64") == 0) {
         fptr = &addingUInt64;
-    } else if (strcmp(type, "float")) {
+    } else if (strcmp(type, "float") == 0) {
         fptr = &addingFloat;
-    } else if (strcmp(type, "double")) {
+    } else if (strcmp(type, "double") == 0) {
         fptr = &addingDouble;
-    } 
+    } else {
+        printf("invalid type!\n");
+        return;
+    }
     for (int i = 0; i < runs; i++) {
         auto t0 = chrono::high_resolution_clock::now();
         int value = (*fptr)(times);
         auto t1 = chrono::high_resolution_clock::now();
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
-        printf("C adding %s x64 run: %d, times: %lu, value: %d, time: %lld ms\n", type, i, times, value, ms);
+        printf("x86_64 adding %s run: %d, times: %lu, value: %d, time: %lld ms\n", type, i, times, value, ms);
     }
 }
 
-void fibPerformanceTest(char const type[], int runs = 4, unsigned long times = 20000, int fibnumber= 20) {
+void fibPerformanceTest(char const type[], int runs = 4, unsigned long times = 100000, int fibnumber= 40) {
     unsigned long (*fptr)(unsigned long, int);
-    if (strcmp(type, "ulong")) {
-        fptr = &fibBenchmarkULong;
-    } else if (strcmp(type, "float")) {
+    if (strcmp(type, "uint32") == 0) {
+        fptr = &fibBenchmarkUInt32;
+    } else if (strcmp(type, "uint64") == 0) {
+        fptr = &fibBenchmarkUInt64;
+    } else if (strcmp(type, "float") == 0) {
         fptr = &fibBenchmarkFloat;
-    } else if (strcmp(type, "double")) {
+    } else if (strcmp(type, "double") == 0) {
         fptr = &fibBenchmarkDouble;
+    } else {
+        printf("invalid type!");
+        return;
     } 
     for (int i = 0; i < runs; i++) {
         auto t0 = chrono::high_resolution_clock::now();
         unsigned long value = (*fptr)(times, fibnumber);
         auto t1 = chrono::high_resolution_clock::now();
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
-        printf("C fibonacci %s x64 run: %d, times: %lu, value: %lu, time: %lld ms\n", type, i, times, value, ms);
+        printf("x86_64 fibonacci %s run: %d, times: %lu, fibnumber: %d, value: %lu, time: %lld ms\n", type, i, times, fibnumber, value, ms);
     }
 }
 
@@ -470,7 +498,7 @@ void render2dPerformanceTest(int resolution= 600, int runs=4, int frames=500) {
         auto t1 = chrono::high_resolution_clock::now();
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
         double fps =  ((double)(1000 * frames) / (double)ms);
-        printf("C render2dx64C %d x %d, run: %d, frames: %d, time: %lld ms, fps: %f \n", resolution, resolution, i, frames, ms, fps);
+        printf("x86_64 render2d %d x %d, run: %d, frames: %d, time: %lld ms, fps: %f \n", resolution, resolution, i, frames, ms, fps);
     }
 }
 #endif
@@ -487,11 +515,10 @@ int main()
     printf("sizeof float: %lu\n", sizeof(float));
     printf("sizeof double: %lu\n", sizeof(double));
     #ifdef __x86_64
-        // native compilation performance frames
+        // // native compilation performance frames
         addingPerformanceTest("uint");
         addingPerformanceTest("ulong");
-        addingPerformanceTest("uint8");
-        addingPerformanceTest("uint16");
+        // uint8 and uint16 are taking too long possibly due to overflowing
         addingPerformanceTest("uint32");
         addingPerformanceTest("uint64");
         addingPerformanceTest("float");
@@ -499,7 +526,8 @@ int main()
         // the fib tests are a lot faster than the other ones
         // seems, unlike JS, clang can optimize the recursive calls into iterative calls somehow
         // using -O0 makes them slower than the adding performance test
-        fibPerformanceTest("ulong");
+        fibPerformanceTest("uint32");
+        fibPerformanceTest("uint64");
         fibPerformanceTest("float");
         fibPerformanceTest("double");
         render2dPerformanceTest();

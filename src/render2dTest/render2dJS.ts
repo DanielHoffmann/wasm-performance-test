@@ -46,7 +46,7 @@ export async function render2dJSPerformanceTest(
     }
     const t1 = performance.now();
     console.log(
-      `C render2dJS ${resolution}x${resolution}, ${frames} frames, run ${i}, time: ${(
+      `JS render2d ${resolution}x${resolution}, ${frames} frames, run ${i}, time: ${(
         t1 - t0
       ).toFixed(0)} ms, fps: ${((1000 * frames) / (t1 - t0)).toFixed(2)}`,
     );

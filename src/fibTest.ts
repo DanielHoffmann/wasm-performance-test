@@ -20,20 +20,31 @@ async function fibJsBenchmark(runs: number, times: number, fibnumber: number) {
       value += fib(fibnumber);
     }
     const t1 = performance.now();
-    console.log(`JS run ${i}, value: ${value}, time: ${t1 - t0} ms`);
+    console.log(
+      `JS run ${i}, value: ${value}, fibnumber: ${fibnumber}, time: ${t1 -
+        t0} ms`,
+    );
     await wait(1000);
   }
 }
+let a = fibJsBenchmark;
+// @ts-ignore
+a = '';
+console.log(a);
 
 async function fibWasmBenchmark(
   wasm: any,
-  type: 'ulong' | 'float' | 'double',
+  type: 'uint32' | 'uint64' | 'float' | 'double',
   runs: number,
   times: number,
   fibnumber: number,
 ) {
   let fn = wasm.instance.exports.fibBenchmarkULong;
-  if (type === 'float') {
+  if (type === 'uint32') {
+    fn = wasm.instance.exports.fibBenchmarkUInt32;
+  } else if (type === 'uint64') {
+    fn = wasm.instance.exports.fibBenchmarkUInt64;
+  } else if (type === 'float') {
     fn = wasm.instance.exports.fibBenchmarkFloat;
   } else if (type === 'double') {
     fn = wasm.instance.exports.fibBenchmarkDouble;
@@ -42,7 +53,10 @@ async function fibWasmBenchmark(
     const t0 = performance.now();
     const value = fn(times, fibnumber);
     const t1 = performance.now();
-    console.log(`C ${type} run ${i}, value: ${value}, time: ${t1 - t0} ms`);
+    console.log(
+      `Wasm ${type} run ${i}, times: ${times}, fibnumber: ${fibnumber}, value: ${value}, time: ${t1 -
+        t0} ms`,
+    );
     await wait(1000);
   }
 }
@@ -50,15 +64,17 @@ async function fibWasmBenchmark(
 export default async function performanceTest(
   wasm: any,
   runs = 4,
-  times = 20000,
-  fibnumber = 20,
+  times = 100000,
+  fibnumber = 40,
 ) {
   await wait(2000);
 
   console.log('---------FIBONACCI TESTS START -----------');
-  await fibWasmBenchmark(wasm, 'ulong', runs, times, fibnumber);
+  await fibWasmBenchmark(wasm, 'uint32', runs, times, fibnumber);
+  await fibWasmBenchmark(wasm, 'uint64', runs, times, fibnumber);
   await fibWasmBenchmark(wasm, 'float', runs, times, fibnumber);
   await fibWasmBenchmark(wasm, 'double', runs, times, fibnumber);
-  await fibJsBenchmark(runs, times, fibnumber);
+  // JS is A LOT slower, lower fibnumber before running!
+  // await fibJsBenchmark(runs, times, fibnumber);
   console.log('---------FIBONACCI TESTS END -------------');
 }
