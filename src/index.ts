@@ -5,14 +5,19 @@ import addingTest from './addingTest';
 import bridgeTest from './bridgeTest';
 import { CharPointer, charPtrToString } from './chelpers';
 import fibTest from './fibTest';
-import { render2dJS, render2dWasm } from './render2dTest';
+import {
+  render2dJS,
+  render2dJSPerformanceTest,
+  render2dWasm,
+  render2dWasmPerformanceTest,
+} from './render2dTest';
 import './index.css';
 // @ts-ignore
 import Worker from './test.worker';
 
-function workerTest(workers = 10) {
+function workerTest(threads = 10) {
   // worker has an infinite loop consuming 100% of the cpu
-  for (let i = 0; i < workers; i++) {
+  for (let i = 0; i < threads; i++) {
     (idx => {
       const worker = new Worker();
       worker.onmessage = function(event: any) {
@@ -29,6 +34,8 @@ a = render2dJS;
 a = render2dWasm;
 a = fibTest;
 a = workerTest;
+a = render2dWasmPerformanceTest;
+a = render2dJSPerformanceTest;
 a = '';
 console.log(a);
 
@@ -64,11 +71,15 @@ const startWasiTask = async () => {
   wasi.start(wasm.instance);
 
   await bridgeTest(wasm, wasmFs);
-  // await addingTest(wasm);
-  // await fibTest(wasm);
-  // await render2dJS();
+  // await render2dJS(4);
   // await render2dWasm(wasm);
   // workerTest();
+
+  /////// PERFORMANCE TESTS ////////
+  await addingTest(wasm);
+  // await fibTest(wasm);
+  // await render2dWasmPerformanceTest(wasm);
+  // await render2dJSPerformanceTest();
 };
 
 startWasiTask();

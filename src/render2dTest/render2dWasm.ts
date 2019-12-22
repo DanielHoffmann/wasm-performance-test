@@ -9,8 +9,45 @@ const ctx = canvas.getContext('2d', {
   depth: false,
 }) as CanvasRenderingContext2D;
 
+function wait(time: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, time);
+  });
+}
+
 let width: number;
 let height: number;
+
+export async function render2dWasmPerformanceTest(
+  wasm: any,
+  resolution = 600,
+  runs = 4,
+  frames = 500,
+) {
+  const {
+    instance: {
+      exports: { render2d, init2d },
+    },
+  } = wasm;
+
+  await wait(2000);
+  console.log('---------render2dWasmPerformanceTest START -----------');
+  for (let i = 0; i < runs; i++) {
+    init2d(resolution, resolution);
+    const t0 = performance.now();
+    for (let j = 0; j < frames; j++) {
+      render2d(j * 1000);
+    }
+    const t1 = performance.now();
+    console.log(
+      `C render2dWasm ${resolution}x${resolution}, ${frames} frames, run ${i}, time: ${(
+        t1 - t0
+      ).toFixed(0)} ms, fps: ${((1000 * frames) / (t1 - t0)).toFixed(2)}`,
+    );
+    await wait(1000);
+  }
+  console.log('---------render2dWasmPerformanceTest END -------------');
+}
 
 export async function render2dWasm(wasm: any, cssanimate = false) {
   (document.getElementById(

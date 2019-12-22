@@ -1,3 +1,4 @@
+import { init2dAnimationJS, renderAnimationJS } from './render2dAnimationJS';
 // @ts-ignore
 import Worker from './renderJS.worker';
 
@@ -10,11 +11,49 @@ const ctx = canvas.getContext('2d', {
   depth: false,
 }) as CanvasRenderingContext2D;
 
+function wait(time: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, time);
+  });
+}
+
 let imageData: ImageData;
 let buf: ArrayBuffer;
 let buf8: Uint8ClampedArray;
 
 const workers: { frameStatus: boolean; worker: any }[] = [];
+
+export async function render2dJSPerformanceTest(
+  resolution = 600,
+  runs = 4,
+  frames = 500,
+) {
+  await wait(2000);
+  imageData = ctx.getImageData(0, 0, resolution, resolution);
+  buf = new SharedArrayBuffer(imageData.data.length);
+  console.log('---------render2dJSPerformanceTest START -----------');
+  for (let i = 0; i < runs; i++) {
+    init2dAnimationJS({
+      width: resolution,
+      height: resolution,
+      sharedBuffer: buf as SharedArrayBuffer,
+      offset: 0,
+      length: resolution,
+    });
+    const t0 = performance.now();
+    for (let j = 0; j < frames; j++) {
+      renderAnimationJS(j * 1000);
+    }
+    const t1 = performance.now();
+    console.log(
+      `C render2dJS ${resolution}x${resolution}, ${frames} frames, run ${i}, time: ${(
+        t1 - t0
+      ).toFixed(0)} ms, fps: ${((1000 * frames) / (t1 - t0)).toFixed(2)}`,
+    );
+    await wait(1000);
+  }
+  console.log('---------render2dJSPerformanceTest END -------------');
+}
 
 export function render2dJS(threads = 1, cssanimate = false) {
   (document.getElementById(

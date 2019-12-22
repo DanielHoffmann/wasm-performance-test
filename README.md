@@ -61,3 +61,39 @@ into /wasi-sysroot
 4. yarn run clang
 
 Run `yarn run clang` again on every .cpp file change. No need to restart the dev server. You might want to change the optimization flag (-O2) in the `clang` package.json script to test the performance implications and final .wasm file size
+
+Run `yarn run run-native` to compile the C++ to x64 and run it. Entry point is ./src/main.cpp main() function. The main() will run performance tests against the same functions that are exported from the wasm module. Useful to compare performance between the wasm-compiled code versus the natively-compiled code
+
+# Conclusions
+
+## C types
+
+wasm32:
+
+```
+sizeof unsigned int: 4
+sizeof unsigned long: 4
+sizeof uint8_t : 1
+sizeof uint16_t : 2
+sizeof uint32_t : 4
+sizeof uint64_t : 8
+sizeof float: 4
+sizeof double: 8
+```
+
+x86_64:
+
+```
+sizeof unsigned int: 4
+sizeof unsigned long: 8
+sizeof uint8_t : 1
+sizeof uint16_t : 2
+sizeof uint32_t : 4
+sizeof uint64_t : 8
+sizeof float: 4
+sizeof double: 8
+```
+
+Due to wasm being compiled to 32 bits unsgined long is only 32 bits in memory. But since the wasm file is then interpreted in a browser that can be 64 bits the code could get translated to x64 native instructions even if the toolchain compiles to 32bits. Apparently the only effect of the toolchain compiling to 64 bits is the ability for the memory to exceed 4GB.
+
+Due to these things it seems the more resonable approach is to always use uintX_t types so your code doesn't change in behaviour when the wasm64 toolchain gets released

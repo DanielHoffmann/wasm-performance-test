@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+#include <limits.h>
 using namespace std;
 
 #define WASM_EXPORT extern "C"
@@ -10,15 +11,13 @@ using namespace std;
 
 #define jspointer void *
 
-int main()
-{
-    printf("C stdout test\n");
-    // using cout increates bundle size by over 900kb
-    // cout << "C++ stdout test" << endl;
-    return 0;
+#ifdef __x86_64
+void __console_log(jspointer str) {
+    printf("%s", (char *)str);
 }
-
+#else
 WASM_IMPORT void __console_log(jspointer str);
+#endif
 
 void __console_log(char const *str)
 {
@@ -237,37 +236,132 @@ unsigned long fib(double n)
     return fib(n - 1) + fib(n - 2) + 1;
 }
 
-WASM_EXPORT int fibBenchmarkULong(unsigned long times, unsigned long fibnumber)
+WASM_EXPORT unsigned long fibBenchmarkULong(unsigned long times, int fibnumber)
 {
     unsigned long acc = 0;
+    unsigned long fibn = (unsigned long) fibnumber;
     for (unsigned long i = 0; i < times; i++)
     {
-        acc += fib(fibnumber);
+        acc += fib(fibn);
     }
     return acc;
 }
 
-WASM_EXPORT int fibBenchmarkFloat(unsigned long times, float fibnumber)
+WASM_EXPORT unsigned long fibBenchmarkFloat(unsigned long times, int fibnumber)
 {
     float acc = 0;
+    float fibn = (float) fibnumber;
     for (unsigned long i = 0; i < times; i++)
     {
-        acc += fib(fibnumber);
+        acc += fib(fibn);
     }
     return acc;
 }
 
-WASM_EXPORT int fibBenchmarkDouble(unsigned long times, double fibnumber)
+WASM_EXPORT unsigned long fibBenchmarkDouble(unsigned long times, int fibnumber)
 {
     double acc = 0;
+    double fibn = (double) fibnumber;
     for (unsigned long i = 0; i < times; i++)
     {
-        acc += fib(fibnumber);
+        acc += fib(fibn);
     }
     return acc;
 }
 
-WASM_EXPORT int addingLong(unsigned long times)
+WASM_EXPORT long addingUInt8(unsigned long times)
+{
+    uint8_t value = 0;
+    // uint8_t is too small to hold times
+    // so this benchmark doesn't really demonstrates the performance difference of uint8
+    for (uint8_t i = 0; i < times; i++)
+    {
+        if (i % 2 == 1)
+        {
+            value += i;
+        }
+        else
+        {
+            value -= i;
+        }
+    }
+    return (unsigned long) value;
+}
+
+WASM_EXPORT long addingUInt16(unsigned long times)
+{
+    uint16_t value = 0;
+    // uint16_t is too small to hold times
+    // so this benchmark doesn't really demonstrates the performance difference of uint16
+    for (uint16_t i = 0; i < times; i++)
+    {
+        if (i % 2 == 1)
+        {
+            value += i;
+        }
+        else
+        {
+            value -= i;
+        }
+    }
+    return (unsigned long) value;
+}
+
+WASM_EXPORT long addingUInt32(unsigned long times)
+{
+    uint32_t value = 0;
+    uint32_t t = (uint32_t) times;
+    for (uint32_t i = 0; i < t; i++)
+    {
+        if (i % 2 == 1)
+        {
+            value += i;
+        }
+        else
+        {
+            value -= i;
+        }
+    }
+    return (unsigned long) value;
+}
+
+WASM_EXPORT long addingUInt64(unsigned long times)
+{
+    uint64_t value = 0;
+    uint64_t t = (uint64_t) times;
+    for (uint64_t i = 0; i < t; i++)
+    {
+        if (i % 2 == 1)
+        {
+            value += i;
+        }
+        else
+        {
+            value -= i;
+        }
+    }
+    return (unsigned long) value;
+}
+
+WASM_EXPORT long addingUInt(unsigned long times)
+{
+    unsigned int value = 0;
+    unsigned int t = (unsigned int) times;
+    for (unsigned int i = 0; i < t; i++)
+    {
+        if (i % 2 == 1)
+        {
+            value += i;
+        }
+        else
+        {
+            value -= i;
+        }
+    }
+    return (unsigned long) value;
+}
+
+WASM_EXPORT long addingULong(unsigned long times)
 {
     long value = 0;
     for (unsigned long i = 0; i < times; i++)
@@ -284,7 +378,7 @@ WASM_EXPORT int addingLong(unsigned long times)
     return value;
 }
 
-WASM_EXPORT int addingFloat(unsigned long times)
+WASM_EXPORT long addingFloat(unsigned long times)
 {
     float value = 0;
     for (unsigned long i = 0; i < times; i++)
@@ -301,7 +395,7 @@ WASM_EXPORT int addingFloat(unsigned long times)
     return value;
 }
 
-WASM_EXPORT int addingDouble(unsigned long times)
+WASM_EXPORT long addingDouble(unsigned long times)
 {
     double value = 0;
     for (unsigned long i = 0; i < times; i++)
@@ -316,4 +410,103 @@ WASM_EXPORT int addingDouble(unsigned long times)
         }
     }
     return value;
+}
+
+#ifdef __x86_64
+void addingPerformanceTest(char const type[], int runs = 4, unsigned long times = 800000000) {
+    long (*fptr)(unsigned long);
+    if (strcmp(type, "uint")) {
+        fptr = &addingUInt;
+    } else if (strcmp(type, "ulong")) {
+        fptr = &addingULong;
+    } else if (strcmp(type, "uint8")) {
+        fptr = &addingUInt32;
+    } else if (strcmp(type, "uint16")) {
+        fptr = &addingUInt32;
+    } else if (strcmp(type, "uint32")) {
+        fptr = &addingUInt32;
+    } else if (strcmp(type, "uint64")) {
+        fptr = &addingUInt64;
+    } else if (strcmp(type, "float")) {
+        fptr = &addingFloat;
+    } else if (strcmp(type, "double")) {
+        fptr = &addingDouble;
+    } 
+    for (int i = 0; i < runs; i++) {
+        auto t0 = chrono::high_resolution_clock::now();
+        int value = (*fptr)(times);
+        auto t1 = chrono::high_resolution_clock::now();
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
+        printf("C adding %s x64 run: %d, times: %lu, value: %d, time: %lld ms\n", type, i, times, value, ms);
+    }
+}
+
+void fibPerformanceTest(char const type[], int runs = 4, unsigned long times = 20000, int fibnumber= 20) {
+    unsigned long (*fptr)(unsigned long, int);
+    if (strcmp(type, "ulong")) {
+        fptr = &fibBenchmarkULong;
+    } else if (strcmp(type, "float")) {
+        fptr = &fibBenchmarkFloat;
+    } else if (strcmp(type, "double")) {
+        fptr = &fibBenchmarkDouble;
+    } 
+    for (int i = 0; i < runs; i++) {
+        auto t0 = chrono::high_resolution_clock::now();
+        unsigned long value = (*fptr)(times, fibnumber);
+        auto t1 = chrono::high_resolution_clock::now();
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
+        printf("C fibonacci %s x64 run: %d, times: %lu, value: %lu, time: %lld ms\n", type, i, times, value, ms);
+    }
+}
+
+// native performance comparison functions
+void render2dPerformanceTest(int resolution= 600, int runs=4, int frames=500) {
+    for (int i = 0; i < runs; i++) {
+        init2d(resolution, resolution);
+        auto t0 = chrono::high_resolution_clock::now();
+        for (int j = 0; j < frames; j++) {
+            render2d((double)(j*1000.0));
+        }
+        auto t1 = chrono::high_resolution_clock::now();
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
+        double fps =  ((double)(1000 * frames) / (double)ms);
+        printf("C render2dx64C %d x %d, run: %d, frames: %d, time: %lld ms, fps: %f \n", resolution, resolution, i, frames, ms, fps);
+    }
+}
+#endif
+
+int main()
+{
+    printf("UINT_MAX: %u ULONG_MAX: %lu\n", UINT_MAX, ULONG_MAX);
+    printf("sizeof unsigned int: %lu\n", sizeof(unsigned int));
+    printf("sizeof unsigned long: %lu\n", sizeof(unsigned long));
+    printf("sizeof uint8_t : %lu\n", sizeof(uint8_t));
+    printf("sizeof uint16_t : %lu\n", sizeof(uint16_t));
+    printf("sizeof uint32_t : %lu\n", sizeof(uint32_t));
+    printf("sizeof uint64_t : %lu\n", sizeof(uint64_t));
+    printf("sizeof float: %lu\n", sizeof(float));
+    printf("sizeof double: %lu\n", sizeof(double));
+    #ifdef __x86_64
+        // native compilation performance frames
+        addingPerformanceTest("uint");
+        addingPerformanceTest("ulong");
+        addingPerformanceTest("uint8");
+        addingPerformanceTest("uint16");
+        addingPerformanceTest("uint32");
+        addingPerformanceTest("uint64");
+        addingPerformanceTest("float");
+        addingPerformanceTest("double");
+        // the fib tests are a lot faster than the other ones
+        // seems, unlike JS, clang can optimize the recursive calls into iterative calls somehow
+        // using -O0 makes them slower than the adding performance test
+        fibPerformanceTest("ulong");
+        fibPerformanceTest("float");
+        fibPerformanceTest("double");
+        render2dPerformanceTest();
+    #else
+        printf("C stdout test\n");
+        // using cout increases bundle size by over 900kb for some reason
+        // cout << "C++ stdout test" << endl;
+    #endif
+    return 0;
 }

@@ -26,23 +26,34 @@ async function fibJsBenchmark(runs: number, times: number) {
   }
 }
 
-async function fibCBenchmark(
+async function fibWasmBenchmark(
   wasm: any,
-  type: 'ulong' | 'float' | 'double',
+  type: 'uint32' | 'uint64' | 'uint' | 'ulong' | 'float' | 'double',
   runs: number,
   times: number,
 ) {
-  let fn = wasm.instance.exports.addingLong;
-  if (type === 'float') {
-    fn = wasm.instance.exports.addingFloat;
+  const {
+    instance: { exports: exp },
+  } = wasm;
+  let fn;
+  if (type === 'uint') {
+    fn = exp.addingUInt;
+  } else if (type === 'ulong') {
+    fn = exp.addingULong;
+  } else if (type === 'uint32') {
+    fn = exp.addingUInt32;
+  } else if (type === 'uint64') {
+    fn = exp.addingUInt64;
+  } else if (type === 'float') {
+    fn = exp.addingFloat;
   } else if (type === 'double') {
-    fn = wasm.instance.exports.addingDouble;
+    fn = exp.addingDouble;
   }
   for (let i = 0; i < runs; i++) {
     const t0 = performance.now();
     const value = fn(times);
     const t1 = performance.now();
-    console.log(`C ${type} run ${i}, value: ${value}, time: ${t1 - t0} ms`);
+    console.log(`Wasm ${type} run ${i}, value: ${value}, time: ${t1 - t0} ms`);
     await wait(1000);
   }
 }
@@ -50,13 +61,16 @@ async function fibCBenchmark(
 export default async function performanceTest(
   wasm: any,
   runs = 4,
-  times = 8000000,
+  times = 800000000,
 ) {
   await wait(2000);
   console.log('---------ADDING TESTS START -----------');
-  await fibCBenchmark(wasm, 'ulong', runs, times);
-  await fibCBenchmark(wasm, 'float', runs, times);
-  await fibCBenchmark(wasm, 'double', runs, times);
   await fibJsBenchmark(runs, times);
+  await fibWasmBenchmark(wasm, 'uint', runs, times);
+  await fibWasmBenchmark(wasm, 'ulong', runs, times);
+  await fibWasmBenchmark(wasm, 'uint32', runs, times);
+  await fibWasmBenchmark(wasm, 'uint64', runs, times);
+  await fibWasmBenchmark(wasm, 'float', runs, times);
+  await fibWasmBenchmark(wasm, 'double', runs, times);
   console.log('---------ADDING TESTS END -------------');
 }

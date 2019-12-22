@@ -12,7 +12,8 @@
     "storybook": "web-tooling storybook:react",
     "test": "web-tooling test",
     "type-check": "web-tooling type-check",
-    "clang": "rm -f ./public/main.wasm && clang/bin/clang++ -fno-exceptions -std=c++11 --target=wasm32-wasi --sysroot wasi-sysroot -Wl,--allow-undefined-file=src/wasm.syms -Wl,--export-all -Wl,--lto-O2 -Wl,-z,stack-size=8388608 -O2 -s -o ./public/main.wasm ./src/main.cpp",
+    "clang": "rm -f ./public/main.wasm && clang/bin/clang++ -fno-exceptions -std=c++11 --target=wasm32-wasi --sysroot wasi-sysroot -Wl,--allow-undefined-file=src/wasm.syms -Wl,--export-all -Wl,--lto-O2 -Wl,-z,stack-size=8388608 -O3 -s -o ./public/main.wasm ./src/main.cpp",
+    "run-native": "rm -rf main.bin && clang/bin/clang++ -fno-exceptions -std=c++11 -O3 -o ./main.bin ./src/main.cpp && ./main.bin",
     "sync-web-tooling": "sync-folders --watch ../web-tooling/config ./node_modules/@sandvikcode/web-tooling/"
   },
   "husky": {
