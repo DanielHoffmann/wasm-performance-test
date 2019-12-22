@@ -199,10 +199,10 @@ WASM_EXPORT void render2d(double timestamp)
             int fadeG = round(120.0 * lerp * lerp * lerp * absoluteDistanceRatioGB);
 
             d2buf[yw + x] =
-                (255 << 24) |   // A
-                (fadeB << 16) | // B
-                (fadeG << 8) |  // G
-                fadeR;          // R
+                (255 << 24) |
+                (fadeB << 16) |
+                (fadeG << 8) |
+                fadeR;
         }
     }
 }
@@ -498,7 +498,7 @@ void render2dPerformanceTest(int resolution= 600, int runs=4, int frames=500) {
         auto t1 = chrono::high_resolution_clock::now();
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
         double fps =  ((double)(1000 * frames) / (double)ms);
-        printf("x86_64 render2d %d x %d, run: %d, frames: %d, time: %lld ms, fps: %f \n", resolution, resolution, i, frames, ms, fps);
+        printf("x86_64 render2d %dx%d, run: %d, frames: %d, time: %lld ms, fps: %f \n", resolution, resolution, i, frames, ms, fps);
     }
 }
 #endif

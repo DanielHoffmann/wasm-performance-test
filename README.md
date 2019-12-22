@@ -38,32 +38,6 @@ Run `yarn run clang` again on every .cpp file change. No need to restart the dev
 
 Run `yarn run run-native` to compile the C++ to x64 and run it immediately. Entry point is ./src/main.cpp main() function. The main() will run performance tests against the same functions that are exported from the wasm module. Useful to compare performance between the wasm-compiled code versus the natively-compiled code.
 
-# Test Cases
-
-To select which test case to run go to index.ts and at the end of the file uncomment the appropriate test and refresh the page.
-
-Most test cases have a JS and a Wasm implementation for comparison, some have multiple wasm implementations using different C types (long, float, double, etc).
-
-## addingTest()
-
-Simple function that adds and substracts to a variable inside a long-running loop, implemented in JS and in C using unsigned longs, floats and doubles
-
-## bridgeTest()
-
-Testing JS/Wasm communication
-
-## render2dJS(threads=1)
-
-Complex animation written in JS that renders to a 600x600 canvas. This is implemented using webworkers and can be parallelized to improve performance (first parameter is number of threads, defaults to 1). Uses SharedArrayBuffer to have a shared memory area between the workers to avoid memory copying.
-
-## render2dWasm()
-
-Same as render2dTestJS, but written in C and compiled to Wasm. It renders to a browser canvas by creating C buffer and sending its pointer to Javascript and associating that buffer with the `<canvas>` tag. This version is not multithreaded because WASM doesn't support threads yet.
-
-## workerTest()
-
-Spawns multiple JS workers that run an infinite loop that logs every so often to console. Meant to check if the browser can actually run it multi-threaded and to test if the main thread freezes
-
 # C types
 
 wasm32:
@@ -100,7 +74,31 @@ Due to these things it seems the more resonable approach is to always use uintX_
 
 Adding a simple `std::cout << "Hello World!";` to the .cpp file increases bundle size by over 900kb, while using `printf()` doesn't meaningfully change the size. Apparently `std::cout` imports currency and date formating code as well as localization code and therefor and blow up your .wasm file size.
 
-One must be careful about the libc and libc++ features one uses (especially libc++).
+One must be careful about the libc and libc++ features one uses (especially libc++). See:
+
+https://github.com/CraneStation/wasi-sdk/issues/87
+
+# Test Cases
+
+To select which test case to run go to index.ts and at the end of the file uncomment the appropriate test and refresh the page.
+
+Most test cases have a JS and a Wasm implementation for comparison, some have multiple wasm implementations using different C types (long, float, double, etc).
+
+## bridgeTest()
+
+Testing JS/Wasm communication
+
+## render2dJS(threads=1)
+
+Complex animation written in JS that renders to a 600x600 canvas. This is implemented using webworkers and can be parallelized to improve performance (first parameter is number of threads, defaults to 1). Uses SharedArrayBuffer to have a shared memory area between the workers to avoid memory copying.
+
+## render2dWasm()
+
+Same as render2dTestJS, but written in C and compiled to Wasm. It renders to a browser canvas by creating C buffer and sending its pointer to Javascript and associating that buffer with the `<canvas>` tag. This version is not multithreaded because WASM doesn't support threads yet.
+
+## workerTest()
+
+Spawns multiple JS workers that run an infinite loop that logs every so often to console. Meant to check if the browser can actually run it multi-threaded and to test if the main thread freezes
 
 # Performance
 
@@ -243,10 +241,10 @@ Wasm render2d 600x600, 500 frames, run 0, time: 14859 ms, fps: 33.65
 Wasm render2d 600x600, 500 frames, run 1, time: 14764 ms, fps: 33.87
 Wasm render2d 600x600, 500 frames, run 2, time: 14718 ms, fps: 33.97
 Wasm render2d 600x600, 500 frames, run 3, time: 14734 ms, fps: 33.94
-x86_64 render2d  600 x 600, run: 0, frames: 500, time: 12763 ms, fps: 39.175742
-x86_64 render2d  600 x 600, run: 1, frames: 500, time: 12752 ms, fps: 39.209536
-x86_64 render2d  600 x 600, run: 2, frames: 500, time: 12774 ms, fps: 39.142007
-x86_64 render2d  600 x 600, run: 3, frames: 500, time: 12732 ms, fps: 39.271128
+x86_64 render2d  600x600, run: 0, frames: 500, time: 12763 ms, fps: 39.175742
+x86_64 render2d  600x600, run: 1, frames: 500, time: 12752 ms, fps: 39.209536
+x86_64 render2d  600x600, run: 2, frames: 500, time: 12774 ms, fps: 39.142007
+x86_64 render2d  600x600, run: 3, frames: 500, time: 12732 ms, fps: 39.271128
 ```
 
 The results of this test are very surprinsingly, not only is JS significantly faster than WASM it is only marginally worse than x86_64. In C this animation function uses a lot of functions from libc (abs, round, fmod, fabs, sqrt), I wonder if one of these functions is significantly slower in libc than in Chrome.

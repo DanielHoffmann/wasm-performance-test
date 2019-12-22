@@ -71,8 +71,8 @@ const startWasiTask = async () => {
   wasi.start(wasm.instance);
 
   await bridgeTest(wasm, wasmFs);
-  // await render2dJS(1);
-  // await render2dWasm(wasm);
+  await render2dJS(1);
+  await render2dWasm(wasm);
   // workerTest();
 
   /////// PERFORMANCE TESTS ////////
