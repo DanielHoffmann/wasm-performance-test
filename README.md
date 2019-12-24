@@ -96,6 +96,10 @@ Complex animation written in JS that renders to a 600x600 canvas. This is implem
 
 Same as render2dTestJS, but written in C and compiled to Wasm. It renders to a browser canvas by creating C buffer and sending its pointer to Javascript and associating that buffer with the `<canvas>` tag. This version is not multithreaded because WASM doesn't support threads yet.
 
+## render3dJS()
+
+A simple webgl animation implemented using JS and .glsl shaders
+
 ## workerTest()
 
 Spawns multiple JS workers that run an infinite loop that logs every so often to console. Meant to check if the browser can actually run it multi-threaded and to test if the main thread freezes

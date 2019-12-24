@@ -108,7 +108,7 @@ export function render2dJS(threads = 1, cssanimate = false) {
   window.requestAnimationFrame(render2dJSActual);
 }
 
-let lastCalledTime: number = performance.now();
+let lastCalledTime = performance.now();
 let count = 0;
 
 function render2dJSActual(timestamp: number) {

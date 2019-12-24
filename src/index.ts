@@ -12,6 +12,7 @@ import {
   render2dWasmPerformanceTest,
 } from './render2dTest';
 import './index.css';
+import { render3dTest } from './render3dTest';
 // @ts-ignore
 import Worker from './test.worker';
 
@@ -36,6 +37,7 @@ a = fibTest;
 a = workerTest;
 a = render2dWasmPerformanceTest;
 a = render2dJSPerformanceTest;
+a = render3dTest;
 a = '';
 console.log(a);
 
@@ -73,6 +75,7 @@ const startWasiTask = async () => {
   await bridgeTest(wasm, wasmFs);
   await render2dJS(1);
   await render2dWasm(wasm);
+  await render3dTest();
   // workerTest();
 
   /////// PERFORMANCE TESTS ////////

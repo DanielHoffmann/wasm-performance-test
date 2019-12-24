@@ -73,7 +73,7 @@ export async function render2dWasm(wasm: any, cssanimate = false) {
     width * height * 4,
   );
   const img = new ImageData(data, width, height);
-  let lastCalledTime: number = performance.now();
+  let lastCalledTime = performance.now();
   let count = 0;
   const render = (timestamp: number) => {
     const now = performance.now();

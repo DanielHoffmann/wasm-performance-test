@@ -5,3 +5,4 @@
 /wasi-sysroot
 yarn-error.log
 /main.bin
+/src/go/
