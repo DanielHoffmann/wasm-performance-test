@@ -5,5 +5,6 @@ while (true) {
   count++;
   if (count % 500000000 === 0) {
     self.postMessage({ count });
+    count = 0;
   }
 }

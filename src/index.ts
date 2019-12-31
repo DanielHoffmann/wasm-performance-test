@@ -2,7 +2,7 @@
 import { WASI } from '@wasmer/wasi';
 import { WasmFs } from '@wasmer/wasmfs';
 import addingTest from './addingTest';
-import bridgeTest from './bridgeTest';
+import bridgeTest from './bridgeTest/bridgeTest';
 import { CharPointer, charPtrToString } from './chelpers';
 import fibTest from './fibTest';
 import {
@@ -13,20 +13,7 @@ import {
 } from './render2dTest';
 import './index.css';
 import { render3dTest } from './render3dTest';
-// @ts-ignore
-import Worker from './test.worker';
-
-function workerTest(threads = 10) {
-  // worker has an infinite loop consuming 100% of the cpu
-  for (let i = 0; i < threads; i++) {
-    (idx => {
-      const worker = new Worker();
-      worker.onmessage = function(event: any) {
-        console.log(`w${idx} ${event.data.count}`);
-      };
-    })(i);
-  }
-}
+import webWorkerTest from './webWorkerTest';
 
 // preventing unused variable TS errors
 let a: any = addingTest;
@@ -34,7 +21,7 @@ a = bridgeTest;
 a = render2dJS;
 a = render2dWasm;
 a = fibTest;
-a = workerTest;
+a = webWorkerTest;
 a = render2dWasmPerformanceTest;
 a = render2dJSPerformanceTest;
 a = render3dTest;
@@ -73,10 +60,12 @@ const startWasiTask = async () => {
   wasi.start(wasm.instance);
 
   await bridgeTest(wasm, wasmFs);
+  // webWorkerTest();
+
+  //////// RENDERING TESTS /////////
   await render2dJS(1);
   await render2dWasm(wasm);
   await render3dTest();
-  // workerTest();
 
   /////// PERFORMANCE TESTS ////////
   // await addingTest(wasm);

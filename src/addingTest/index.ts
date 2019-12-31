@@ -16,7 +16,7 @@ function wait(time: number) {
   });
 }
 
-async function fibJsBenchmark(runs: number, times: number) {
+async function jsBenchmark(runs: number, times: number) {
   for (let i = 0; i < runs; i++) {
     const t0 = performance.now();
     const value = adding(times);
@@ -26,7 +26,7 @@ async function fibJsBenchmark(runs: number, times: number) {
   }
 }
 
-async function fibWasmBenchmark(
+async function wasmBenchmark(
   wasm: any,
   type: 'uint32' | 'uint64' | 'uint' | 'ulong' | 'float' | 'double',
   runs: number,
@@ -65,12 +65,12 @@ export default async function performanceTest(
 ) {
   await wait(2000);
   console.log('---------ADDING TESTS START -----------');
-  await fibJsBenchmark(runs, times);
-  await fibWasmBenchmark(wasm, 'uint', runs, times);
-  await fibWasmBenchmark(wasm, 'ulong', runs, times);
-  await fibWasmBenchmark(wasm, 'uint32', runs, times);
-  await fibWasmBenchmark(wasm, 'uint64', runs, times);
-  await fibWasmBenchmark(wasm, 'float', runs, times);
-  await fibWasmBenchmark(wasm, 'double', runs, times);
+  await jsBenchmark(runs, times);
+  await wasmBenchmark(wasm, 'uint', runs, times);
+  await wasmBenchmark(wasm, 'ulong', runs, times);
+  await wasmBenchmark(wasm, 'uint32', runs, times);
+  await wasmBenchmark(wasm, 'uint64', runs, times);
+  await wasmBenchmark(wasm, 'float', runs, times);
+  await wasmBenchmark(wasm, 'double', runs, times);
   console.log('---------ADDING TESTS END -------------');
 }

@@ -1,4 +1,4 @@
-import { freeCharPtr, stringToCharPtr } from './chelpers';
+import { freeCharPtr, stringToCharPtr } from '../chelpers';
 
 export default async function bridgeTest(wasm: any, wasmFs: any) {
   const {
